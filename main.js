@@ -3,33 +3,36 @@ let download = document.getElementById('download')
 let videoElement = document.getElementById('videoElement')
 
 download.onclick = async () => {
-    if (navigator.mediaDevices.getUserMedia !== undefined) {
-        let mStream = await navigator.getDisplayMedia({'video': true})
+    let mStream = await navigator.getDisplayMedia({ 'video': true })
 
-        videoElement.srcObject = mStream
+    videoElement.srcObject = mStream
 
-        let opts = { mimeType: 'video/webm; codecs=vp9' };
-        let rec = new MediaRecorder(videoElement.srcObject, opts);
-        let blobs = [];
+    let opts = { mimeType: 'video/webm; codecs=vp9' };
+    let rec = new MediaRecorder(videoElement.srcObject, opts);
+    let blobs = [];
 
-        function downloader(blob) {
-            let url = window.URL.createObjectURL(blob);
-            let a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = 'test.webm';
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(function () {
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-            }, 100);
+    rec.ondataavailable = (e) => (e.data && e.data.size > 0) ? blobs.push(e.data) : null;
+    rec.onstop = () => {
+        //  get the image blob
+        let finalBlob = new Blob(blobs, { type: 'video/mp4' });
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", 'https://api.cloudinary.com/v1_1/og_tech/image/upload', true);
+        xhr.setRequestHeader("Content-Type", "multipart/form-data");
+        xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+
+        xhr.onreadystatechange = function () {//Call a function when the state changes.
+            if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                console.log(this.status);
+            }
         }
 
-        rec.ondataavailable = (e) => (e.data && e.data.size > 0) ? blobs.push(e.data) : null;
-        rec.onstop = () => downloader(new Blob(blobs, { type: 'video/webm' }));
-
-        rec.start(100);
-        setTimeout(() => rec.stop(), 10000)
+        let formData = new FormData();
+        formData.append('upload_preset', 'cloudy_shot');
+        formData.append('file', finalBlob);
+        xhr.send(formData);
     }
-};  
+
+    rec.start(100);
+    setTimeout(() => rec.stop(), 2000)
+};
