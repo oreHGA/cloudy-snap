@@ -4,16 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Cloudy Shot</title>
+    <title>Cloudy Snap</title>
+    <script src="./main.js"></script>
+    <style>
+        .container{
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        #videoElement{
+          width: 50%;
+          padding: 30px;
+        }
+
+        body{
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+    </style>
 </head>
 <body>
-    <h1>CloudyShot</h1>
-    
-    <button id=download>
-        Capture Sceen and Upload to Cloudinary
-    </button>
-    
-    <video id=videoElement autoplay></video>
-    <script src="./main.js"></script>
+    <img src="https://res.cloudinary.com/cloudinary/image/upload/c_scale,w_200/v1/logo/for_white_bg/cloudinary_vertical_logo_for_white_bg.png">
+    <h1>CloudySnap</h1>
+    <p>Take a screen recording on the web and upload it to Cloudinary</p>
+
+    <div class="container">
+      <button id="recorder">
+        Capture screen for 2 seconds and Upload to Cloudinary
+      </button>
+      <video id="videoElement" autoplay></video>
+    </div>
 </body>
 </html>
