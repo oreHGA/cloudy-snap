@@ -1,8 +1,8 @@
-let download = document.getElementById('download')
+let recorder = document.getElementById('recorder')
 
 let videoElement = document.getElementById('videoElement')
 
-download.onclick = async () => {
+recorder.onclick = async () => {
     let mStream = await navigator.getDisplayMedia({ 'video': true })
 
     videoElement.srcObject = mStream
@@ -15,21 +15,21 @@ download.onclick = async () => {
     rec.onstop = () => {
         //  get the image blob
         let finalBlob = new Blob(blobs, { type: 'video/mp4' });
-
+        // create form data for submission         
+        let formData = new FormData();
+        formData.append('upload_preset', 'CLOUDINARY_UPLOAD_PRESET');
+        formData.append('api_key', "CLOUDINARY_API_KEY");
+        formData.append('file', finalBlob);
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", 'https://api.cloudinary.com/v1_1/og_tech/image/upload', true);
-        xhr.setRequestHeader("Content-Type", "multipart/form-data");
-        xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+        xhr.open("POST", 'https://api.cloudinary.com/v1_1/CLOUDINARY_CLOUD_NAME/auto/upload');
 
-        xhr.onreadystatechange = function () {//Call a function when the state changes.
+        xhr.onreadystatechange = function () {
             if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
                 console.log(this.status);
+                alert("Video uploaded to your cloudinary media library");
             }
         }
 
-        let formData = new FormData();
-        formData.append('upload_preset', 'cloudy_shot');
-        formData.append('file', finalBlob);
         xhr.send(formData);
     }
 
